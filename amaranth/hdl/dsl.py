@@ -395,7 +395,7 @@ class Module(_ModuleBuilderRoot, Elaboratable):
         if name in fsm_data["states"]:
             raise NameError("FSM state '{}' is already defined".format(name))
         if name not in fsm_data["encoding"]:
-            fsm_data["encoding"][name] = name or len(fsm_data["encoding"])
+            fsm_data["encoding"][name] = name and len(fsm_data["encoding"])
         try:
             _outer_case, self._statements = self._statements, []
             self._ctrl_context = None
