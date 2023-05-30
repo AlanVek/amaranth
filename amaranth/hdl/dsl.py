@@ -350,7 +350,11 @@ class Module(_ModuleBuilderRoot, Elaboratable):
             self._statements = _outer_case
 
     def Default(self):
-        return self.Case()
+        if self._ctrl_context == "Switch":
+            return self.Case()
+        if self._ctrl_context == "FSM":
+             return self.State(None)
+        raise SyntaxError("Default is only supported inside of Switch or FSM")
 
     @contextmanager
     def FSM(self, reset=None, domain="sync", name="fsm"):
@@ -391,7 +395,7 @@ class Module(_ModuleBuilderRoot, Elaboratable):
         if name in fsm_data["states"]:
             raise NameError("FSM state '{}' is already defined".format(name))
         if name not in fsm_data["encoding"]:
-            fsm_data["encoding"][name] = len(fsm_data["encoding"])
+            fsm_data["encoding"][name] = name or len(fsm_data["encoding"])
         try:
             _outer_case, self._statements = self._statements, []
             self._ctrl_context = None
